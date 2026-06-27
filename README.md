@@ -4,6 +4,8 @@ CLI Learning Agent for the modular AI Systems Engineering curriculum.
 
 ## Setup
 
+Requires Python 3.11 or newer.
+
 ```bash
 python3 -m venv .venv
 . .venv/bin/activate
