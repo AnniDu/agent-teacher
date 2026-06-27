@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 5.1 — Requirement Analysis
 
+**Goal:** Learn how to translate user needs and business requirements into clear system requirements.
+
 Topics
 
 * Requirement Analysis

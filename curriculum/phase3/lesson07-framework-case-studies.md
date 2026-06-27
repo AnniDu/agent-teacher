@@ -13,6 +13,8 @@ optional: true
 ---
 ### Lesson 3.7 — Framework Case Studies *(Optional)*
 
+**Goal:** Compare how different AI frameworks implement the same architectural concepts and engineering principles.
+
 Topics
 
 * LangGraph

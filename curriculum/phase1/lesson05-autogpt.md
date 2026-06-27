@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 1.5 — AutoGPT
 
+**Goal:** Understand the strengths, limitations, and engineering lessons of fully autonomous LLM agents.
+
 Topics
 
 * Goal-driven Execution

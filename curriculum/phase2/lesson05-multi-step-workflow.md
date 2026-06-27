@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 2.5 — Multi-step Workflow
 
+**Goal:** Learn how complex agent behavior emerges by coordinating multiple reasoning and execution steps.
+
 Topics
 
 * Planner

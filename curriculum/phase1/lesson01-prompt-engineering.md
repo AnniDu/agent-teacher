@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 1.1 — Prompt Engineering
 
+**Goal:** Understand how prompts guide LLM behavior and why prompting alone is insufficient for building reliable AI systems.
+
 Topics
 
 * Prompt Engineering

@@ -13,6 +13,8 @@ optional: false
 ---
 ### Hands-on Lab 3 — Build a Framework-based Agent
 
+**Goal:** Apply the concepts from Phase 3 by implementing an AI agent using a modern agent framework.
+
 Topics
 
 * Framework Migration

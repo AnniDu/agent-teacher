@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 2.2 — Structured Output
 
+**Goal:** Learn how to produce reliable, machine-readable outputs that can be safely consumed by downstream systems.
+
 Topics
 
 * JSON Output

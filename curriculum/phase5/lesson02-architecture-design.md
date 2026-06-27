@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 5.2 — Architecture Design
 
+**Goal:** Learn how to design the overall architecture of an AI system by identifying components, responsibilities, and system boundaries.
+
 Topics
 
 * Component Design

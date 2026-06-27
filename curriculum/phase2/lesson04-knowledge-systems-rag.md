@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 2.4 — Knowledge Systems (RAG)
 
+**Goal:** Understand how retrieval augments reasoning by separating knowledge storage from language models.
+
 Topics
 
 * Document Loading

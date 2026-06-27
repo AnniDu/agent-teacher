@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 5.3 — Architecture Trade-offs
 
+**Goal:** Learn how to evaluate architectural decisions by balancing cost, quality, latency, flexibility, scalability, and maintainability.
+
 Topics
 
 * Simplicity vs Flexibility

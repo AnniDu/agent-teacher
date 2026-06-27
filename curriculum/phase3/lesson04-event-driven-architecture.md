@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 3.4 — Event-driven Architecture
 
+**Goal:** Understand how asynchronous and event-driven execution improves scalability and responsiveness.
+
 Topics
 
 * Streaming

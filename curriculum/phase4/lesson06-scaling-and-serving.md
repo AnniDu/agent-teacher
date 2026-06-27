@@ -13,6 +13,8 @@ optional: true
 ---
 ### Lesson 4.6 — Scaling & Serving *(Optional)*
 
+**Goal:** Understand the infrastructure and optimization techniques behind large-scale LLM serving.
+
 Topics
 
 * vLLM

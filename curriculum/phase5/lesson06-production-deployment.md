@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 5.6 — Production Deployment
 
+**Goal:** Learn how to deploy a complete AI system using production engineering best practices.
+
 Topics
 
 * API Service

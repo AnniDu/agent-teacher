@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 2.1 — Tool Calling
 
+**Goal:** Understand how AI agents interact with external systems by separating reasoning from execution.
+
 Topics
 
 * Function Calling

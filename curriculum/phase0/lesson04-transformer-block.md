@@ -13,7 +13,7 @@ optional: false
 ---
 ### Lesson 0.4 — Transformer Block
 
-**Goal:** Understand how a Transformer layer processes information.
+**Goal:** Understand how the major components of a Transformer layer work together to process information.
 
 Topics
 

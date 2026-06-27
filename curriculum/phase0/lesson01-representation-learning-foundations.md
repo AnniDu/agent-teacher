@@ -13,7 +13,7 @@ optional: false
 ---
 ### Lesson 0.1 — Representation Learning Foundations
 
-**Goal:** Understand why AI represents knowledge as vectors.
+**Goal:** Understand why AI represents knowledge as vectors and how vector operations capture semantic relationships.
 
 Topics
 

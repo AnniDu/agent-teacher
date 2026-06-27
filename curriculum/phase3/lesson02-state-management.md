@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 3.2 — State Management
 
+**Goal:** Learn how to design explicit, maintainable, and reliable state for AI systems.
+
 Topics
 
 * Shared State

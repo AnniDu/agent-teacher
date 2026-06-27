@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 2.8 — Agent Design Patterns
 
+**Goal:** Understand common architectural patterns that can be reused to build scalable AI agents.
+
 Topics
 
 * Router

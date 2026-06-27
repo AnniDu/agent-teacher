@@ -13,6 +13,8 @@ optional: false
 ---
 ### Final Project — Build a Production AI System
 
+**Goal:** Apply the knowledge from the entire course by designing, building, deploying, evaluating, and iteratively improving a complete production-grade AI system.
+
 Topics
 
 * Design Your Own Architecture

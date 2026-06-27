@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 5.4 — Workflow Design
 
+**Goal:** Learn how to design reliable workflows that coordinate reasoning, tools, state, and human interaction.
+
 Topics
 
 * Control Flow

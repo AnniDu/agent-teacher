@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 4.1 — Deployment
 
+**Goal:** Learn how to package and deploy AI systems as reliable production services.
+
 Topics
 
 * FastAPI

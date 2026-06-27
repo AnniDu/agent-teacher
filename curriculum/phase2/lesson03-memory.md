@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 2.3 — Memory
 
+**Goal:** Understand how AI agents store, retrieve, and manage information across interactions.
+
 Topics
 
 * Working Memory

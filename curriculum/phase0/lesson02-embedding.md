@@ -13,7 +13,7 @@ optional: false
 ---
 ### Lesson 0.2 — Embedding
 
-**Goal:** Understand how discrete tokens become continuous vector representations.
+**Goal:** Understand how discrete tokens are transformed into continuous semantic representations.
 
 Topics
 

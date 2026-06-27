@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 1.6 — BabyAGI
 
+**Goal:** Understand how task decomposition and task management improve long-running autonomous execution.
+
 Topics
 
 * Task Decomposition

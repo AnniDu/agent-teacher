@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 1.7 — Workflow Engineering
 
+**Goal:** Understand why modern AI systems separate reasoning from deterministic workflow execution.
+
 Topics
 
 * Explicit Control Loop

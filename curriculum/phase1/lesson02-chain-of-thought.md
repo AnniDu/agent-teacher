@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 1.2 — Chain of Thought
 
+**Goal:** Understand how explicit reasoning improves LLM performance and where pure reasoning reaches its limits.
+
 Topics
 
 * Chain of Thought

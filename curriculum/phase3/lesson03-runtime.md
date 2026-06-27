@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 3.3 — Runtime
 
+**Goal:** Understand how runtime systems enable durable, fault-tolerant agent execution.
+
 Topics
 
 * Runtime

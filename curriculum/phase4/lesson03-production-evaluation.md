@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 4.3 — Production Evaluation
 
+**Goal:** Learn how to continuously evaluate deployed AI systems using both automated metrics and human feedback.
+
 Topics
 
 * Offline Evaluation

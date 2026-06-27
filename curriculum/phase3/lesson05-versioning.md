@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 3.5 — Versioning
 
+**Goal:** Learn how to safely evolve AI systems while maintaining compatibility and reproducibility.
+
 Topics
 
 * Prompt Versioning

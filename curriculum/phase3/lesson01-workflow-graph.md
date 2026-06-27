@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 3.1 — Workflow Graph
 
+**Goal:** Understand how agent execution can be modeled as composable workflow graphs.
+
 Topics
 
 * Graph

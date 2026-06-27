@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 1.3 — ReAct
 
+**Goal:** Understand how reasoning and action are combined to enable interaction with external tools and environments.
+
 Topics
 
 * Thought

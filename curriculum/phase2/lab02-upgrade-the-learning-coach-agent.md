@@ -13,6 +13,8 @@ optional: false
 ---
 ### Hands-on Lab 2 — Upgrade the Learning Coach Agent
 
+**Goal:** Apply the concepts from Phase 2 by extending the Learning Coach Agent with modern agent capabilities.
+
 Topics
 
 * Tool Calling

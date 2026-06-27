@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 4.4 — Cost Management
 
+**Goal:** Understand how to balance model quality, latency, and operational cost in production environments.
+
 Topics
 
 * Token Cost

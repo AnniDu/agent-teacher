@@ -13,7 +13,7 @@ optional: false
 ---
 ### Lesson 0.3 — Attention
 
-**Goal:** Understand how tokens exchange information through attention.
+**Goal:** Understand how tokens selectively exchange information through attention mechanisms.
 
 Topics
 

@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 4.5 — Safety & Guardrails
 
+**Goal:** Learn how to build AI systems that operate safely, predictably, and within defined boundaries.
+
 Topics
 
 * Prompt Versioning

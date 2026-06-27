@@ -13,6 +13,8 @@ optional: false
 ---
 ### Hands-on Lab 4 — Deploy the Learning Coach Agent
 
+**Goal:** Apply the concepts from Phase 4 by deploying, monitoring, evaluating, and optimizing the Learning Coach Agent in a production-like environment.
+
 Topics
 
 * Production Deployment

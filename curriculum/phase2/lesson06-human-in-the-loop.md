@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 2.6 — Human-in-the-loop
 
+**Goal:** Understand how human supervision improves the reliability, safety, and controllability of AI systems.
+
 Topics
 
 * Approval

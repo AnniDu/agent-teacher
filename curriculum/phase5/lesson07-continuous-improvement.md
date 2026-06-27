@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 5.7 — Continuous Improvement
 
+**Goal:** Learn how to continuously improve AI systems through evaluation, regression testing, performance optimization, and operational feedback.
+
 Topics
 
 * Evaluation

@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 3.6 — Observability
 
+**Goal:** Learn how to inspect, monitor, debug, and optimize AI systems running in production.
+
 Topics
 
 * Logging

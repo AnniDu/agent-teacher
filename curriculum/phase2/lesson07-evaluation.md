@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 2.7 — Evaluation
 
+**Goal:** Learn how to systematically measure, compare, and improve AI agent performance.
+
 Topics
 
 * Agent Evaluation

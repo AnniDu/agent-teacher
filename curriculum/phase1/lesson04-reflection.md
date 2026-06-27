@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 1.4 — Reflection
 
+**Goal:** Understand how agents improve their behavior through self-evaluation and feedback.
+
 Topics
 
 * Reflection

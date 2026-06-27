@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 5.5 — Runtime Design
 
+**Goal:** Learn how to design runtime strategies that ensure reliable long-running execution and failure recovery.
+
 Topics
 
 * Failure Recovery

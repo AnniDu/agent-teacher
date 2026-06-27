@@ -14,9 +14,9 @@ Learn to design, build, deploy, and evolve production-grade AI systems from firs
 
 ### Lesson 0.1 — Representation Learning Foundations
 
-**Goal:** Understand why AI represents knowledge as vectors.
+**Goal:** Understand why AI represents knowledge as vectors and how vector operations capture semantic relationships.
 
-Topics
+**Topics**
 
 * Scalar, Vector, Matrix, Tensor
 * Vector Space Intuition
@@ -26,11 +26,13 @@ Topics
 * Linear Combination
 * Why AI Represents Knowledge as Vectors
 
+---
+
 ### Lesson 0.2 — Embedding
 
-**Goal:** Understand how discrete tokens become continuous vector representations.
+**Goal:** Understand how discrete tokens are transformed into continuous semantic representations.
 
-Topics
+**Topics**
 
 * Tokenization
 * Vocabulary
@@ -38,11 +40,13 @@ Topics
 * Semantic Space
 * Similarity Search
 
+---
+
 ### Lesson 0.3 — Attention
 
-**Goal:** Understand how tokens exchange information through attention.
+**Goal:** Understand how tokens selectively exchange information through attention mechanisms.
 
-Topics
+**Topics**
 
 * Self-Attention
 * Query / Key / Value
@@ -50,11 +54,13 @@ Topics
 * Softmax
 * Weighted Sum
 
+---
+
 ### Lesson 0.4 — Transformer Block
 
-**Goal:** Understand how a Transformer layer processes information.
+**Goal:** Understand how the major components of a Transformer layer work together to process information.
 
-Topics
+**Topics**
 
 * Multi-Head Attention
 * Feed Forward Network (FFN)
@@ -62,11 +68,13 @@ Topics
 * LayerNorm
 * Position Encoding
 
+---
+
 ### Lesson 0.5 — Complete Transformer
 
-**Goal:** Understand the complete forward pass and information flow of a Transformer.
+**Goal:** Understand the complete forward pass and information flow of a Transformer model.
 
-Topics
+**Topics**
 
 * Complete Forward Pass
 * Information Flow
@@ -80,15 +88,21 @@ Topics
 
 ### Lesson 1.1 — Prompt Engineering
 
-Topics
+**Goal:** Understand how prompts guide LLM behavior and why prompting alone is insufficient for building reliable AI systems.
+
+**Topics**
 
 * Prompt Engineering
 * In-Context Learning
 * Few-shot Learning
 
+---
+
 ### Lesson 1.2 — Chain of Thought
 
-Topics
+**Goal:** Understand how explicit reasoning improves LLM performance and where pure reasoning reaches its limits.
+
+**Topics**
 
 * Chain of Thought
 * Intermediate Reasoning
@@ -96,9 +110,13 @@ Topics
 * Why Reasoning Changed LLMs
 * Limitations of Pure Reasoning
 
+---
+
 ### Lesson 1.3 — ReAct
 
-Topics
+**Goal:** Understand how reasoning and action are combined to enable interaction with external tools and environments.
+
+**Topics**
 
 * Thought
 * Action
@@ -106,18 +124,26 @@ Topics
 * Tool Interaction
 * Closed Feedback Loop
 
+---
+
 ### Lesson 1.4 — Reflection
 
-Topics
+**Goal:** Understand how agents improve their behavior through self-evaluation and feedback.
+
+**Topics**
 
 * Reflection
 * Feedback
 * Verbal Memory
 * Learning from Mistakes
 
+---
+
 ### Lesson 1.5 — AutoGPT
 
-Topics
+**Goal:** Understand the strengths, limitations, and engineering lessons of fully autonomous LLM agents.
+
+**Topics**
 
 * Goal-driven Execution
 * Continuous Autonomy
@@ -127,9 +153,13 @@ Topics
 * Cost Explosion
 * Engineering Lessons
 
+---
+
 ### Lesson 1.6 — BabyAGI
 
-Topics
+**Goal:** Understand how task decomposition and task management improve long-running autonomous execution.
+
+**Topics**
 
 * Task Decomposition
 * Task Queue
@@ -137,9 +167,13 @@ Topics
 * Task Prioritization
 * Long-running Planning
 
+---
+
 ### Lesson 1.7 — Workflow Engineering
 
-Topics
+**Goal:** Understand why modern AI systems separate reasoning from deterministic workflow execution.
+
+**Topics**
 
 * Explicit Control Loop
 * Deterministic Control Flow
@@ -153,9 +187,13 @@ Topics
 * Human-in-the-loop
 * Observability
 
+---
+
 ### Hands-on Lab 1 — Build a Learning Coach Agent
 
-Topics
+**Goal:** Apply the concepts from Phase 1 by building the first version of a stateful Learning Coach Agent.
+
+**Topics**
 
 * Learning State
 * Teaching Workflow
@@ -163,17 +201,17 @@ Topics
 * Dry Note Generation
 * Progress Tracking
 
-# AI Systems Engineering
-
-## Part 2 — Building & Engineering Agents
-
 # Phase 2 — Agent Building Blocks
 
-**Goal:** Build every core capability of a modern AI agent.
+**Goal:** Build every core capability required to develop modern AI agents.
+
+---
 
 ### Lesson 2.1 — Tool Calling
 
-Topics
+**Goal:** Understand how AI agents interact with external systems by separating reasoning from execution.
+
+**Topics**
 
 * Function Calling
 * Tool Calling
@@ -182,9 +220,13 @@ Topics
 * Tool Execution
 * Tool Result Handling
 
+---
+
 ### Lesson 2.2 — Structured Output
 
-Topics
+**Goal:** Learn how to produce reliable, machine-readable outputs that can be safely consumed by downstream systems.
+
+**Topics**
 
 * JSON Output
 * Schema Validation
@@ -192,9 +234,13 @@ Topics
 * Output Parsing
 * Error Recovery
 
+---
+
 ### Lesson 2.3 — Memory
 
-Topics
+**Goal:** Understand how AI agents store, retrieve, and manage information across interactions.
+
+**Topics**
 
 * Working Memory
 * Episodic Memory
@@ -203,9 +249,13 @@ Topics
 * Memory Retrieval
 * When NOT to Use Memory
 
+---
+
 ### Lesson 2.4 — Knowledge Systems (RAG)
 
-Topics
+**Goal:** Understand how retrieval augments reasoning by separating knowledge storage from language models.
+
+**Topics**
 
 * Document Loading
 * Chunking
@@ -214,9 +264,13 @@ Topics
 * Retrieval Pipeline
 * RAG Failure Modes
 
+---
+
 ### Lesson 2.5 — Multi-step Workflow
 
-Topics
+**Goal:** Learn how complex agent behavior emerges by coordinating multiple reasoning and execution steps.
+
+**Topics**
 
 * Planner
 * Executor
@@ -224,9 +278,13 @@ Topics
 * State Passing
 * Control Flow
 
+---
+
 ### Lesson 2.6 — Human-in-the-loop
 
-Topics
+**Goal:** Understand how human supervision improves the reliability, safety, and controllability of AI systems.
+
+**Topics**
 
 * Approval
 * Review
@@ -234,9 +292,13 @@ Topics
 * Resume
 * Permission Boundaries
 
+---
+
 ### Lesson 2.7 — Evaluation
 
-Topics
+**Goal:** Learn how to systematically measure, compare, and improve AI agent performance.
+
+**Topics**
 
 * Agent Evaluation
 * Tool Evaluation
@@ -244,9 +306,13 @@ Topics
 * LLM-as-a-Judge
 * Regression Testing
 
+---
+
 ### Lesson 2.8 — Agent Design Patterns
 
-Topics
+**Goal:** Understand common architectural patterns that can be reused to build scalable AI agents.
+
+**Topics**
 
 * Router
 * Planner
@@ -257,9 +323,13 @@ Topics
 * Worker
 * Supervisor
 
+---
+
 ### Hands-on Lab 2 — Upgrade the Learning Coach Agent
 
-Topics
+**Goal:** Apply the concepts from Phase 2 by extending the Learning Coach Agent with modern agent capabilities.
+
+**Topics**
 
 * Tool Calling
 * Memory
@@ -272,11 +342,15 @@ Topics
 
 # Phase 3 — Agent Runtime Architecture
 
-**Goal:** Learn how reliable AI agents execute in production.
+**Goal:** Learn how reliable AI agents are engineered to execute in production environments.
+
+---
 
 ### Lesson 3.1 — Workflow Graph
 
-Topics
+**Goal:** Understand how agent execution can be modeled as composable workflow graphs.
+
+**Topics**
 
 * Graph
 * Node
@@ -285,18 +359,26 @@ Topics
 * Loop
 * Subgraph
 
+---
+
 ### Lesson 3.2 — State Management
 
-Topics
+**Goal:** Learn how to design explicit, maintainable, and reliable state for AI systems.
+
+**Topics**
 
 * Shared State
 * State Schema
 * State Isolation
 * State Versioning
 
+---
+
 ### Lesson 3.3 — Runtime
 
-Topics
+**Goal:** Understand how runtime systems enable durable, fault-tolerant agent execution.
+
+**Topics**
 
 * Runtime
 * Checkpoint
@@ -305,9 +387,13 @@ Topics
 * Timeout
 * Durable Execution
 
+---
+
 ### Lesson 3.4 — Event-driven Architecture
 
-Topics
+**Goal:** Understand how asynchronous and event-driven execution improves scalability and responsiveness.
+
+**Topics**
 
 * Streaming
 * Event Bus
@@ -315,18 +401,26 @@ Topics
 * Background Jobs
 * Cancellation
 
+---
+
 ### Lesson 3.5 — Versioning
 
-Topics
+**Goal:** Learn how to safely evolve AI systems while maintaining compatibility and reproducibility.
+
+**Topics**
 
 * Prompt Versioning
 * Workflow Versioning
 * State Migration
 * Artifact Versioning
 
+---
+
 ### Lesson 3.6 — Observability
 
-Topics
+**Goal:** Learn how to inspect, monitor, debug, and optimize AI systems running in production.
+
+**Topics**
 
 * Logging
 * Tracing
@@ -336,9 +430,13 @@ Topics
 * Latency
 * Cost Tracking
 
+---
+
 ### Lesson 3.7 — Framework Case Studies *(Optional)*
 
-Topics
+**Goal:** Compare how different AI frameworks implement the same architectural concepts and engineering principles.
+
+**Topics**
 
 * LangGraph
 * PocketFlow
@@ -350,25 +448,29 @@ Topics
 * Codex
 * OpenHands
 
+---
+
 ### Hands-on Lab 3 — Build a Framework-based Agent
 
-Topics
+**Goal:** Apply the concepts from Phase 3 by implementing an AI agent using a modern agent framework.
+
+**Topics**
 
 * Framework Migration
 * MCP Integration
 * Multi-Agent Collaboration
 
-# AI Systems Engineering
-
-## Part 3 — Production & System Design
-
 # Phase 4 — Production AI Systems
 
-**Goal:** Deploy, monitor, evaluate, and operate AI systems in production.
+**Goal:** Learn how to deploy, operate, monitor, and continuously improve AI systems in production.
+
+---
 
 ### Lesson 4.1 — Deployment
 
-Topics
+**Goal:** Learn how to package and deploy AI systems as reliable production services.
+
+**Topics**
 
 * FastAPI
 * Docker
@@ -376,9 +478,13 @@ Topics
 * Environment Variables
 * Secrets Management
 
+---
+
 ### Lesson 4.2 — Monitoring
 
-Topics
+**Goal:** Understand how to observe the health, reliability, and performance of production AI systems.
+
+**Topics**
 
 * Logging
 * Metrics
@@ -386,18 +492,26 @@ Topics
 * Alerting
 * Error Tracking
 
+---
+
 ### Lesson 4.3 — Production Evaluation
 
-Topics
+**Goal:** Learn how to continuously evaluate deployed AI systems using both automated metrics and human feedback.
+
+**Topics**
 
 * Offline Evaluation
 * Online Evaluation
 * Human Feedback
 * A/B Testing
 
+---
+
 ### Lesson 4.4 — Cost Management
 
-Topics
+**Goal:** Understand how to balance model quality, latency, and operational cost in production environments.
+
+**Topics**
 
 * Token Cost
 * Tool Cost
@@ -405,18 +519,26 @@ Topics
 * Model Routing
 * Budget Control
 
+---
+
 ### Lesson 4.5 — Safety & Guardrails
 
-Topics
+**Goal:** Learn how to build AI systems that operate safely, predictably, and within defined boundaries.
+
+**Topics**
 
 * Prompt Versioning
 * Guardrails
 * Safety Policies
 * Permission Control
 
+---
+
 ### Lesson 4.6 — Scaling & Serving *(Optional)*
 
-Topics
+**Goal:** Understand the infrastructure and optimization techniques behind large-scale LLM serving.
+
+**Topics**
 
 * vLLM
 * SGLang
@@ -429,9 +551,13 @@ Topics
 * Load Balancing
 * Autoscaling
 
+---
+
 ### Hands-on Lab 4 — Deploy the Learning Coach Agent
 
-Topics
+**Goal:** Apply the concepts from Phase 4 by deploying, monitoring, evaluating, and optimizing the Learning Coach Agent in a production-like environment.
+
+**Topics**
 
 * Production Deployment
 * Monitoring
@@ -443,29 +569,41 @@ Topics
 
 # Phase 5 — AI System Design
 
-**Goal:** Design, implement, deploy, and continuously improve a complete production-grade AI system.
+**Goal:** Learn how to design complete AI systems by making sound engineering decisions under real-world constraints.
+
+---
 
 ### Lesson 5.1 — Requirement Analysis
 
-Topics
+**Goal:** Learn how to translate user needs and business requirements into clear system requirements.
+
+**Topics**
 
 * Requirement Analysis
 * User Goals
 * System Constraints
 * Failure Modes
 
+---
+
 ### Lesson 5.2 — Architecture Design
 
-Topics
+**Goal:** Learn how to design the overall architecture of an AI system by identifying components, responsibilities, and system boundaries.
+
+**Topics**
 
 * Component Design
 * Agent Architecture
 * System Diagram
 * Boundary Definition
 
+---
+
 ### Lesson 5.3 — Architecture Trade-offs
 
-Topics
+**Goal:** Learn how to evaluate architectural decisions by balancing cost, quality, latency, flexibility, scalability, and maintainability.
+
+**Topics**
 
 * Simplicity vs Flexibility
 * Latency vs Quality
@@ -480,27 +618,39 @@ Topics
 * Human-in-the-loop vs Full Automation
 * Build vs Buy
 
+---
+
 ### Lesson 5.4 — Workflow Design
 
-Topics
+**Goal:** Learn how to design reliable workflows that coordinate reasoning, tools, state, and human interaction.
+
+**Topics**
 
 * Control Flow
 * State Flow
 * Tool Flow
 * Approval Flow
 
+---
+
 ### Lesson 5.5 — Runtime Design
 
-Topics
+**Goal:** Learn how to design runtime strategies that ensure reliable long-running execution and failure recovery.
+
+**Topics**
 
 * Failure Recovery
 * Checkpoint Strategy
 * Retry Strategy
 * Long-running Execution
 
+---
+
 ### Lesson 5.6 — Production Deployment
 
-Topics
+**Goal:** Learn how to deploy a complete AI system using production engineering best practices.
+
+**Topics**
 
 * API Service
 * Database
@@ -508,9 +658,13 @@ Topics
 * Monitoring
 * Scaling
 
+---
+
 ### Lesson 5.7 — Continuous Improvement
 
-Topics
+**Goal:** Learn how to continuously improve AI systems through evaluation, regression testing, performance optimization, and operational feedback.
+
+**Topics**
 
 * Evaluation
 * Regression Testing
@@ -518,9 +672,13 @@ Topics
 * Cost Optimization
 * Performance Optimization
 
+---
+
 ### Final Project — Build a Production AI System
 
-Topics
+**Goal:** Apply the knowledge from the entire course by designing, building, deploying, evaluating, and iteratively improving a complete production-grade AI system.
+
+**Topics**
 
 * Design Your Own Architecture
 * Design Your Own Workflow

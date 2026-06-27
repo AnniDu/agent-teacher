@@ -13,6 +13,8 @@ optional: false
 ---
 ### Hands-on Lab 1 — Build a Learning Coach Agent
 
+**Goal:** Apply the concepts from Phase 1 by building the first version of a stateful Learning Coach Agent.
+
 Topics
 
 * Learning State

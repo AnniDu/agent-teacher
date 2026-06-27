@@ -13,6 +13,8 @@ optional: false
 ---
 ### Lesson 4.2 — Monitoring
 
+**Goal:** Understand how to observe the health, reliability, and performance of production AI systems.
+
 Topics
 
 * Logging

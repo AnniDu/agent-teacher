@@ -13,7 +13,7 @@ optional: false
 ---
 ### Lesson 0.5 — Complete Transformer
 
-**Goal:** Understand the complete forward pass and information flow of a Transformer.
+**Goal:** Understand the complete forward pass and information flow of a Transformer model.
 
 Topics
 
