@@ -22,9 +22,19 @@ class CliTest(unittest.TestCase):
             self.assertEqual(exit_code, 0)
             _assert_teaching_memory(self, repo_root)
 
+    def test_learn_teach_persists_teaching_output_to_memory(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo_root = _write_repo_fixture(Path(tmpdir))
+
+            exit_code = _run_cli(repo_root, "teach")
+
+            self.assertEqual(exit_code, 0)
+            _assert_teaching_memory(self, repo_root)
+
     def test_assess_saves_response_assessment_and_updates_state(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             repo_root = _write_repo_fixture(Path(tmpdir))
+            fake_llm = _FakeLlm([_assessment_response()])
             _write_teaching_memory(repo_root)
             response_path = repo_root / "responses" / "today.md"
             response_path.parent.mkdir()
@@ -35,10 +45,13 @@ class CliTest(unittest.TestCase):
                 "assess",
                 "--response",
                 "responses/today.md",
-                responses=[_assessment_response()],
+                llm=fake_llm,
             )
 
             self.assertEqual(exit_code, 0)
+            self.assertEqual(len(fake_llm.prompts), 1)
+            self.assertIn("Teaching output from memory", fake_llm.prompts[0])
+            self.assertIn("I think vectors encode meaning by position.", fake_llm.prompts[0])
             learner_response = json.loads(
                 (repo_root / "memory" / "P0L1" / "learner_response.json").read_text()
             )
@@ -66,10 +79,11 @@ class _FakeLlm:
         return self.responses.pop(0)
 
 
-def _run_cli(repo_root: Path, *args: str, responses: list[str] | None = None) -> int:
+def _run_cli(repo_root: Path, *args: str, llm: _FakeLlm | None = None) -> int:
     argv = ["--repo-root", str(repo_root), *args]
+    fake_llm = llm or _FakeLlm()
     with (
-        patch("agent_teacher.cli.default_llm_client", return_value=_FakeLlm(responses)),
+        patch("agent_teacher.cli.default_llm_client", return_value=fake_llm),
         patch("agent_teacher.cli._utc_now", return_value="2026-06-27T00:00:00Z"),
         redirect_stdout(io.StringIO()),
     ):

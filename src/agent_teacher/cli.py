@@ -25,7 +25,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "command",
         nargs="?",
-        choices=("assess",),
+        choices=("teach", "assess"),
         help="Workflow to run. Defaults to teaching the current lesson.",
     )
     parser.add_argument(
@@ -35,7 +35,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     if args.command == "assess" and not args.response:
         parser.error("learn assess requires --response <path>")
-    if args.command is None and args.response:
+    if args.command != "assess" and args.response:
         parser.error("--response can only be used with learn assess")
 
     repo_root = Path(args.repo_root).resolve()
