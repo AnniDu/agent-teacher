@@ -9,35 +9,87 @@ from pathlib import Path
 from unittest.mock import patch
 
 from agent_teacher import cli
+from agent_teacher.memory_store import JsonMemoryStore, MemoryRecord
 
 
 class CliTest(unittest.TestCase):
-    def test_learn_persists_teaching_output_to_memory(self) -> None:
+    def test_learn_without_command_prints_usage(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             repo_root = _write_repo_fixture(Path(tmpdir))
 
-            exit_code = _run_cli(repo_root)
+            exit_code, stderr = _run_cli(repo_root)
+
+            self.assertEqual(exit_code, 2)
+            self.assertIn("usage:", stderr)
+
+    def test_learn_teach_persists_teaching_output_to_memory(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo_root = _write_repo_fixture(Path(tmpdir))
+
+            exit_code, _stderr = _run_cli(repo_root, "teach")
 
             self.assertEqual(exit_code, 0)
             _assert_teaching_memory(self, repo_root)
 
+    def test_learn_assess_saves_response_assessment_and_updates_state(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo_root = _write_repo_fixture(Path(tmpdir))
+            fake_llm = _FakeLlm([_assessment_response()])
+            _write_teaching_memory(repo_root)
+            response_path = repo_root / "responses" / "today.md"
+            response_path.parent.mkdir()
+            response_path.write_text("I think vectors encode meaning by position.")
+
+            exit_code, _stderr = _run_cli(
+                repo_root,
+                "assess",
+                "--response",
+                "responses/today.md",
+                llm=fake_llm,
+            )
+
+            self.assertEqual(exit_code, 0)
+            self.assertEqual(len(fake_llm.prompts), 1)
+            self.assertIn("Teaching output from memory", fake_llm.prompts[0])
+            self.assertIn("I think vectors encode meaning by position.", fake_llm.prompts[0])
+            learner_response = json.loads(
+                (repo_root / "memory" / "P0L1" / "learner_response.json").read_text()
+            )
+            assessment = json.loads(
+                (repo_root / "memory" / "P0L1" / "assessment.json").read_text()
+            )
+            progress = (repo_root / "state" / "progress" / "phase0.yaml").read_text()
+            self.assertEqual(
+                learner_response["content"], "I think vectors encode meaning by position."
+            )
+            self.assertEqual(learner_response["record_type"], "learner_response")
+            self.assertEqual(learner_response["metadata"]["response_path"], str(response_path))
+            self.assertIn('"assessment"', assessment["content"])
+            self.assertEqual(assessment["record_type"], "assessment")
+            self.assertIn("status: in_progress", progress)
+
 
 class _FakeLlm:
-    def __init__(self) -> None:
-        self.responses = ["Teaching output", '{"state_update": {}}']
+    def __init__(self, responses: list[str] | None = None) -> None:
+        self.responses = responses or ["Teaching output", '{"state_update": {}}']
+        self.prompts: list[str] = []
 
     def generate(self, prompt: str) -> str:
+        self.prompts.append(prompt)
         return self.responses.pop(0)
 
 
-def _run_cli(repo_root: Path) -> int:
-    argv = ["--repo-root", str(repo_root)]
+def _run_cli(repo_root: Path, *args: str, llm: _FakeLlm | None = None) -> tuple[int, str]:
+    argv = ["--repo-root", str(repo_root), *args]
+    fake_llm = llm or _FakeLlm()
+    stderr = io.StringIO()
     with (
-        patch("agent_teacher.cli.default_llm_client", return_value=_FakeLlm()),
+        patch("agent_teacher.cli.default_llm_client", return_value=fake_llm),
         patch("agent_teacher.cli._utc_now", return_value="2026-06-27T00:00:00Z"),
         redirect_stdout(io.StringIO()),
+        patch("sys.stderr", stderr),
     ):
-        return cli.main(argv)
+        return cli.main(argv), stderr.getvalue()
 
 
 def _assert_teaching_memory(test: unittest.TestCase, repo_root: Path) -> None:
@@ -57,6 +109,41 @@ def _assert_teaching_memory(test: unittest.TestCase, repo_root: Path) -> None:
         },
     )
     test.assertEqual(data["created_at"], "2026-06-27T00:00:00Z")
+
+
+def _write_teaching_memory(repo_root: Path) -> None:
+    JsonMemoryStore(repo_root).save(
+        MemoryRecord(
+            record_id="P0L1:teaching",
+            lesson_id="P0L1",
+            record_type="teaching",
+            content="Teaching output from memory",
+            metadata={"phase": "P0", "lesson_id": "P0L1"},
+            created_at="2026-06-27T00:00:00Z",
+        )
+    )
+
+
+def _assessment_response() -> str:
+    return json.dumps(
+        {
+            "assessment": {
+                "lesson_id": "P0L1",
+                "summary": "Partial understanding",
+                "evidence": ["Learner mentioned vectors and meaning"],
+                "gaps": [],
+                "feedback": "Keep practicing.",
+            },
+            "state_update": {
+                "progress": {
+                    "phase": "P0",
+                    "lesson_id": "P0L1",
+                    "status": "in_progress",
+                    "completed_topics": ["Vector Space Intuition"],
+                }
+            },
+        }
+    )
 
 
 def _write_repo_fixture(repo_root: Path) -> Path:

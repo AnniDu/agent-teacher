@@ -84,3 +84,88 @@ review_queue:
 ## Required JSON Shape
 {json.dumps(example, indent=2)}
 """
+
+
+def build_assessment_prompt(
+    context: LearningContext, teaching_output: str, learner_response: str
+) -> str:
+    example = {
+        "assessment": {
+            "lesson_id": context.curriculum.lesson_id,
+            "summary": "",
+            "evidence": [],
+            "gaps": [],
+            "feedback": "",
+        },
+        "state_update": {
+            "navigation": context.state.navigation,
+            "progress": {
+                "phase": context.curriculum.phase_id,
+                "lesson_id": context.curriculum.lesson_id,
+                "status": "in_progress",
+                "score": None,
+                "weak_topics": [],
+                "completed_topics": [],
+            },
+            "review_queue": {"add": [], "remove": []},
+            "lesson_note": {
+                "lesson_id": context.curriculum.lesson_id,
+                "summary": "",
+                "weak_points": [],
+                "aha_moments": [],
+                "next_action": "",
+            },
+        },
+    }
+    lesson_goal = _lesson_goal(context.curriculum.lesson)
+    return f"""Assess the learner response for the current lesson.
+
+Rules:
+- Return only valid JSON. No Markdown fences.
+- The LLM must not write files; it only proposes structured data.
+- Evaluate the learner response, not the teaching output.
+- Never infer mastery from teaching output alone.
+- Only mark topics completed when learner evidence supports it.
+- If learner evidence is weak or missing, keep status "in_progress".
+- Keep arrays empty when there is no evidence.
+
+## Current Lesson Goal
+{lesson_goal}
+
+## Course Index
+{context.curriculum.course_index}
+
+## Current Phase Index
+{context.curriculum.phase_index}
+
+## Current Lesson
+{context.curriculum.lesson}
+
+## Current State
+navigation:
+{yaml.safe_dump(context.state.navigation, sort_keys=False)}
+progress:
+{yaml.safe_dump(context.state.progress, sort_keys=False)}
+review_queue:
+{yaml.safe_dump(context.state.review_queue, sort_keys=False)}
+
+## Teaching Output
+{teaching_output}
+
+## Learner Response
+{learner_response}
+
+## Required JSON Shape
+{json.dumps(example, indent=2)}
+"""
+
+
+def _lesson_goal(lesson: str) -> str:
+    for line in lesson.splitlines():
+        stripped = line.strip()
+        lowered = stripped.lower()
+        if lowered.startswith("**goal:**"):
+            return stripped.split("**", 2)[-1].strip()
+        if lowered.startswith("goal:"):
+            return stripped.split(":", 1)[1].strip()
+    return "(use the current lesson content as the lesson goal)"
