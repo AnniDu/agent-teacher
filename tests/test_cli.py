@@ -17,7 +17,7 @@ class CliTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             repo_root = _write_repo_fixture(Path(tmpdir))
 
-            exit_code, stderr = _run_cli(repo_root)
+            exit_code, stderr, _stdout = _run_cli(repo_root)
 
             self.assertEqual(exit_code, 2)
             self.assertIn("usage:", stderr)
@@ -26,7 +26,7 @@ class CliTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             repo_root = _write_repo_fixture(Path(tmpdir))
 
-            exit_code, _stderr = _run_cli(repo_root, "teach")
+            exit_code, _stderr, _stdout = _run_cli(repo_root, "teach")
 
             self.assertEqual(exit_code, 0)
             _assert_teaching_memory(self, repo_root)
@@ -40,7 +40,7 @@ class CliTest(unittest.TestCase):
             response_path.parent.mkdir()
             response_path.write_text("I think vectors encode meaning by position.")
 
-            exit_code, _stderr = _run_cli(
+            exit_code, _stderr, _stdout = _run_cli(
                 repo_root,
                 "assess",
                 "--response",
@@ -68,6 +68,88 @@ class CliTest(unittest.TestCase):
             self.assertEqual(assessment["record_type"], "assessment")
             self.assertIn("status: in_progress", progress)
 
+    def test_learn_respond_writes_response_file(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo_root = _write_repo_fixture(Path(tmpdir))
+
+            exit_code, stderr, stdout = _run_cli(
+                repo_root,
+                "respond",
+                "--output",
+                "responses/today.md",
+                stdin="  first line\nsecond line\n\n",
+            )
+
+            self.assertEqual(exit_code, 0)
+            self.assertEqual(stderr, "")
+            self.assertEqual(stdout, "responses/today.md\n")
+            self.assertEqual(
+                (repo_root / "responses" / "today.md").read_text(),
+                "  first line\nsecond line\n",
+            )
+
+    def test_learn_respond_rejects_empty_response(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo_root = _write_repo_fixture(Path(tmpdir))
+
+            exit_code, stderr, _stdout = _run_cli(
+                repo_root,
+                "respond",
+                "--output",
+                "responses/today.md",
+                stdin="  \n\t",
+            )
+
+            self.assertEqual(exit_code, 1)
+            self.assertIn("Learner response cannot be empty", stderr)
+            self.assertFalse((repo_root / "responses" / "today.md").exists())
+
+    def test_learn_respond_rejects_existing_output(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo_root = _write_repo_fixture(Path(tmpdir))
+            response_path = repo_root / "responses" / "today.md"
+            response_path.parent.mkdir()
+            response_path.write_text("existing\n")
+
+            exit_code, stderr, _stdout = _run_cli(
+                repo_root,
+                "respond",
+                "--output",
+                "responses/today.md",
+                stdin="new response",
+            )
+
+            self.assertEqual(exit_code, 1)
+            self.assertIn("Response output already exists", stderr)
+            self.assertEqual(response_path.read_text(), "existing\n")
+
+    def test_learn_assess_can_read_generated_response_file(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            repo_root = _write_repo_fixture(Path(tmpdir))
+            _write_teaching_memory(repo_root)
+            fake_llm = _FakeLlm([_assessment_response()])
+            response_path = repo_root / "responses" / "today.md"
+
+            respond_exit_code, _respond_stderr, _respond_stdout = _run_cli(
+                repo_root,
+                "respond",
+                "--output",
+                "responses/today.md",
+                stdin="I think vectors encode meaning by position.",
+            )
+            assess_exit_code, _assess_stderr, _assess_stdout = _run_cli(
+                repo_root,
+                "assess",
+                "--response",
+                "responses/today.md",
+                llm=fake_llm,
+            )
+
+            self.assertEqual(respond_exit_code, 0)
+            self.assertEqual(assess_exit_code, 0)
+            self.assertEqual(response_path.read_text(), "I think vectors encode meaning by position.\n")
+            self.assertIn("I think vectors encode meaning by position.", fake_llm.prompts[0])
+
 
 class _FakeLlm:
     def __init__(self, responses: list[str] | None = None) -> None:
@@ -79,17 +161,24 @@ class _FakeLlm:
         return self.responses.pop(0)
 
 
-def _run_cli(repo_root: Path, *args: str, llm: _FakeLlm | None = None) -> tuple[int, str]:
+def _run_cli(
+    repo_root: Path,
+    *args: str,
+    llm: _FakeLlm | None = None,
+    stdin: str = "",
+) -> tuple[int, str, str]:
     argv = ["--repo-root", str(repo_root), *args]
     fake_llm = llm or _FakeLlm()
+    stdout = io.StringIO()
     stderr = io.StringIO()
     with (
         patch("agent_teacher.cli.default_llm_client", return_value=fake_llm),
         patch("agent_teacher.cli._utc_now", return_value="2026-06-27T00:00:00Z"),
-        redirect_stdout(io.StringIO()),
+        redirect_stdout(stdout),
+        patch("sys.stdin", io.StringIO(stdin)),
         patch("sys.stderr", stderr),
     ):
-        return cli.main(argv), stderr.getvalue()
+        return cli.main(argv), stderr.getvalue(), stdout.getvalue()
 
 
 def _assert_teaching_memory(test: unittest.TestCase, repo_root: Path) -> None:

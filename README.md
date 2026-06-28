@@ -36,7 +36,13 @@ learn teach
 
 The CLI reads `state/navigation.yaml`, loads only the current phase and lesson from `curriculum/`, asks the configured LLM to teach the lesson, saves the teaching output to `memory/<lesson_id>/teaching.json`, then asks for a structured JSON state update. The LLM never writes files directly; Python code owns all persistence.
 
-After teaching, save your response in a file and run assessment:
+After teaching, capture your response from standard input:
+
+```bash
+echo "my answer" | learn respond --output responses/today.md
+```
+
+Then run assessment:
 
 ```bash
 learn assess --response responses/today.md
@@ -61,6 +67,7 @@ Implemented:
 - JSON memory writes for learner responses and assessment output
 - `learn` command group
 - `learn teach` teaching workflow
+- `learn respond --output <path>` response capture workflow
 - `learn assess --response <path>` assessment workflow
 
 Not implemented yet:

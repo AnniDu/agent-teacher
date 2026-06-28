@@ -25,12 +25,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "command",
         nargs="?",
-        choices=("teach", "assess"),
+        choices=("teach", "assess", "respond"),
         help="Workflow to run.",
     )
     parser.add_argument(
         "--response",
         help="Learner response file for the assess workflow.",
+    )
+    parser.add_argument(
+        "--output",
+        help="Learner response output file for the respond workflow.",
     )
     args = parser.parse_args(argv)
     if args.command is None:
@@ -40,9 +44,17 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("learn assess requires --response <path>")
     if args.command != "assess" and args.response:
         parser.error("--response can only be used with learn assess")
+    if args.command == "respond" and not args.output:
+        parser.error("learn respond requires --output <path>")
+    if args.command != "respond" and args.output:
+        parser.error("--output can only be used with learn respond")
 
     repo_root = Path(args.repo_root).resolve()
     try:
+        if args.command == "respond":
+            _run_response_capture(repo_root, Path(args.output), sys.stdin.read())
+            return 0
+
         _load_env_file(repo_root / ".env")
         context = _load_context(repo_root)
         llm = default_llm_client()
@@ -89,6 +101,18 @@ def _run_assessment(
     assessment_response = llm.generate(assessment_prompt)
     _save_assessment_output(repo_root, context, assessment_response)
     StateUpdater(repo_root).apply(assessment_response, context)
+
+
+def _run_response_capture(repo_root: Path, output_path: Path, raw_response: str) -> None:
+    resolved_output_path = _resolve_repo_path(repo_root, output_path)
+    if resolved_output_path.exists():
+        raise RuntimeError(f"Response output already exists: {resolved_output_path}")
+    if not raw_response.strip():
+        raise RuntimeError("Learner response cannot be empty")
+
+    resolved_output_path.parent.mkdir(parents=True, exist_ok=True)
+    resolved_output_path.write_text(_with_single_trailing_newline(raw_response))
+    print(_display_path(repo_root, resolved_output_path))
 
 
 def _load_context(repo_root: Path) -> LearningContext:
@@ -150,7 +174,18 @@ def _memory_metadata(context: LearningContext) -> dict[str, str]:
 
 
 def _resolve_repo_path(repo_root: Path, path: Path) -> Path:
-    return path if path.is_absolute() else repo_root / path
+    return path.resolve() if path.is_absolute() else (repo_root / path).resolve()
+
+
+def _display_path(repo_root: Path, path: Path) -> str:
+    try:
+        return str(path.relative_to(repo_root))
+    except ValueError:
+        return str(path)
+
+
+def _with_single_trailing_newline(text: str) -> str:
+    return text.rstrip("\n") + "\n"
 
 
 def _utc_now() -> str:
