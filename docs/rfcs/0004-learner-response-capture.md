@@ -33,8 +33,9 @@ learn respond --output responses/today.md
 - Require non-empty input after trimming surrounding whitespace.
 - Resolve relative output paths under the repository root.
 - Create parent directories for the output path when needed.
-- Write the response text to the output path.
-- Print the saved path.
+- Normalize the saved response by trimming surrounding whitespace and writing exactly one trailing newline.
+- Fail with a clear error if the output file already exists.
+- Print the saved path as repository-relative when it is under the repository root, otherwise print the absolute path.
 - Ensure `learn assess --response responses/today.md` can read the generated file.
 
 # Non-goals
@@ -79,11 +80,15 @@ The response capture workflow should:
 2. Resolve the output path:
    - absolute paths are used as provided
    - relative paths are resolved under the repository root
-3. Read all text from `stdin`.
-4. Reject empty input after trimming surrounding whitespace.
-5. Create the output path's parent directories.
-6. Write the learner response text to the output path.
-7. Print the saved path.
+3. Fail with a clear error if the output file already exists.
+4. Read all text from `stdin`.
+5. Trim surrounding whitespace from the input.
+6. Reject the response if the trimmed input is empty.
+7. Create the output path's parent directories.
+8. Write the normalized response text followed by exactly one trailing newline.
+9. Print the saved path:
+   - repository-relative when the output path is under the repository root
+   - absolute when the output path is outside the repository root
 
 The response capture command should not load curriculum state, call the LLM, update `state/`, or write `memory/`.
 
@@ -156,11 +161,14 @@ Adding `learn respond` introduces another CLI command, but the command is narrow
 
 Reading from `stdin` is simple and scriptable, but it is less ergonomic for long-form writing than an editor. The generated file remains easy to inspect and reuse.
 
+Normalizing response text makes saved files predictable for later assessment and testing. It removes surrounding whitespace from the user's submitted response, so callers that need exact whitespace preservation would need a future option.
+
+Failing when the output file already exists prevents accidental response loss. A future `--force` flag can add explicit overwrite behavior if needed.
+
+Printing repository-relative paths for files under the repo keeps normal workflow output concise while still supporting absolute paths outside the repo.
+
 Writing a plain response file instead of memory keeps workflow boundaries clear. The assessment workflow remains the place where learner response evidence enters `MemoryStore`.
 
 # Open Questions
 
-- Should `learn respond` preserve trailing newlines exactly as entered or normalize to a single trailing newline?
-- Should overwriting an existing response file require an explicit flag?
-- Should the saved path be printed as absolute or repository-relative?
 - Should future response capture support an editor mode?
