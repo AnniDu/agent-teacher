@@ -26,7 +26,9 @@ export GEMINI_MODEL="gemini-1.5-flash"
 learn
 ```
 
-The CLI reads `state/navigation.yaml`, loads only the current phase and lesson from `curriculum/`, asks the configured LLM to teach the lesson, then asks for a structured JSON state update. The LLM never writes files directly; the Python state updater applies the structured update to files under `state/`.
+The CLI reads `state/navigation.yaml`, loads only the current phase and lesson from `curriculum/`, asks the configured LLM to teach the lesson, saves the teaching output to `memory/<lesson_id>/teaching.json`, then asks for a structured JSON state update. The LLM never writes files directly; Python code owns all persistence.
+
+`memory/` stores raw learning evidence, such as teaching output returned by the LLM. `state/` stores mutable learner state derived from workflows, such as navigation, progress, review queues, and lesson notes. `MemoryStore` writes memory records only; `StateUpdater` applies state updates only.
 
 ## Current Scope
 
@@ -39,6 +41,7 @@ Implemented:
 - Gemini-backed LLM client
 - structured JSON state update parsing
 - YAML and Markdown state writes
+- JSON memory writes for teaching output
 - `learn` CLI entry point
 
 Not implemented yet:
