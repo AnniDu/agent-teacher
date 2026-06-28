@@ -3,10 +3,12 @@ from __future__ import annotations
 import argparse
 import os
 import sys
+from datetime import UTC, datetime
 from pathlib import Path
 
 from .curriculum_loader import CurriculumLoader
 from .llm_client import LLMError, default_llm_client
+from .memory_store import JsonMemoryStore, MemoryRecord
 from .models import LearningContext
 from .prompt_builder import build_state_update_prompt, build_teaching_prompt
 from .state_loader import StateLoader
@@ -20,6 +22,13 @@ def main(argv: list[str] | None = None) -> int:
         default=".",
         help="Repository root containing curriculum/ and state/. Defaults to current directory.",
     )
+    parser.add_argument(
+        "command",
+        nargs="?",
+        choices=("teach",),
+        default="teach",
+        help="Run the teaching workflow. Defaults to teach.",
+    )
     args = parser.parse_args(argv)
 
     repo_root = Path(args.repo_root).resolve()
@@ -31,6 +40,7 @@ def main(argv: list[str] | None = None) -> int:
         teaching_prompt = build_teaching_prompt(context)
         teaching_response = llm.generate(teaching_prompt)
         print(teaching_response)
+        JsonMemoryStore(repo_root).save(_teaching_record(context, teaching_response, repo_root))
 
         state_prompt = build_state_update_prompt(context, teaching_response)
         state_response = llm.generate(state_prompt)
@@ -48,6 +58,30 @@ def _load_context(repo_root: Path) -> LearningContext:
     curriculum = CurriculumLoader(repo_root).load_for_location(location)
     state = state_loader.load_for_location(location, curriculum.previous_lesson_id)
     return LearningContext(curriculum=curriculum, state=state)
+
+
+def _teaching_record(context: LearningContext, content: str, repo_root: Path) -> MemoryRecord:
+    lesson_id = context.curriculum.lesson_id
+    metadata = {
+        "phase": context.curriculum.phase_id,
+        "lesson_id": lesson_id,
+        "lesson_path": _metadata_path(repo_root, context.curriculum.lesson_path),
+    }
+    return MemoryRecord(
+        record_id=f"{lesson_id}-teaching",
+        lesson_id=lesson_id,
+        record_type="teaching",
+        content=content,
+        metadata=metadata,
+        created_at=datetime.now(UTC).isoformat().replace("+00:00", "Z"),
+    )
+
+
+def _metadata_path(repo_root: Path, path: Path) -> str:
+    try:
+        return path.relative_to(repo_root).as_posix()
+    except ValueError:
+        return path.as_posix()
 
 
 def _load_env_file(path: Path) -> None:
