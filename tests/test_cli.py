@@ -13,25 +13,25 @@ from agent_teacher.memory_store import JsonMemoryStore, MemoryRecord
 
 
 class CliTest(unittest.TestCase):
-    def test_learn_persists_teaching_output_to_memory(self) -> None:
+    def test_learn_without_command_prints_usage(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             repo_root = _write_repo_fixture(Path(tmpdir))
 
-            exit_code = _run_cli(repo_root)
+            exit_code, stderr = _run_cli(repo_root)
 
-            self.assertEqual(exit_code, 0)
-            _assert_teaching_memory(self, repo_root)
+            self.assertEqual(exit_code, 2)
+            self.assertIn("usage:", stderr)
 
     def test_learn_teach_persists_teaching_output_to_memory(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             repo_root = _write_repo_fixture(Path(tmpdir))
 
-            exit_code = _run_cli(repo_root, "teach")
+            exit_code, _stderr = _run_cli(repo_root, "teach")
 
             self.assertEqual(exit_code, 0)
             _assert_teaching_memory(self, repo_root)
 
-    def test_assess_saves_response_assessment_and_updates_state(self) -> None:
+    def test_learn_assess_saves_response_assessment_and_updates_state(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             repo_root = _write_repo_fixture(Path(tmpdir))
             fake_llm = _FakeLlm([_assessment_response()])
@@ -40,7 +40,7 @@ class CliTest(unittest.TestCase):
             response_path.parent.mkdir()
             response_path.write_text("I think vectors encode meaning by position.")
 
-            exit_code = _run_cli(
+            exit_code, _stderr = _run_cli(
                 repo_root,
                 "assess",
                 "--response",
@@ -79,15 +79,17 @@ class _FakeLlm:
         return self.responses.pop(0)
 
 
-def _run_cli(repo_root: Path, *args: str, llm: _FakeLlm | None = None) -> int:
+def _run_cli(repo_root: Path, *args: str, llm: _FakeLlm | None = None) -> tuple[int, str]:
     argv = ["--repo-root", str(repo_root), *args]
     fake_llm = llm or _FakeLlm()
+    stderr = io.StringIO()
     with (
         patch("agent_teacher.cli.default_llm_client", return_value=fake_llm),
         patch("agent_teacher.cli._utc_now", return_value="2026-06-27T00:00:00Z"),
         redirect_stdout(io.StringIO()),
+        patch("sys.stderr", stderr),
     ):
-        return cli.main(argv)
+        return cli.main(argv), stderr.getvalue()
 
 
 def _assert_teaching_memory(test: unittest.TestCase, repo_root: Path) -> None:

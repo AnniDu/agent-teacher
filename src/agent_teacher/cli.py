@@ -26,13 +26,16 @@ def main(argv: list[str] | None = None) -> int:
         "command",
         nargs="?",
         choices=("teach", "assess"),
-        help="Workflow to run. Defaults to teaching the current lesson.",
+        help="Workflow to run.",
     )
     parser.add_argument(
         "--response",
         help="Learner response file for the assess workflow.",
     )
     args = parser.parse_args(argv)
+    if args.command is None:
+        parser.print_usage(sys.stderr)
+        return 2
     if args.command == "assess" and not args.response:
         parser.error("learn assess requires --response <path>")
     if args.command != "assess" and args.response:
@@ -43,10 +46,10 @@ def main(argv: list[str] | None = None) -> int:
         _load_env_file(repo_root / ".env")
         context = _load_context(repo_root)
         llm = default_llm_client()
-        if args.command == "assess":
-            _run_assessment(repo_root, context, llm, Path(args.response))
-        else:
+        if args.command == "teach":
             _run_teaching(repo_root, context, llm)
+        elif args.command == "assess":
+            _run_assessment(repo_root, context, llm, Path(args.response))
     except (RuntimeError, OSError, LLMError) as exc:
         print(f"learn: error: {exc}", file=sys.stderr)
         return 1
