@@ -3,10 +3,12 @@ from __future__ import annotations
 import argparse
 import os
 import sys
+from datetime import UTC, datetime
 from pathlib import Path
 
 from .curriculum_loader import CurriculumLoader
 from .llm_client import LLMError, default_llm_client
+from .memory_store import JsonMemoryStore, MemoryRecord
 from .models import LearningContext
 from .prompt_builder import build_state_update_prompt, build_teaching_prompt
 from .state_loader import StateLoader
@@ -20,6 +22,12 @@ def main(argv: list[str] | None = None) -> int:
         default=".",
         help="Repository root containing curriculum/ and state/. Defaults to current directory.",
     )
+    parser.add_argument(
+        "command",
+        nargs="?",
+        choices=("teach",),
+        help="Workflow to run. Defaults to teach.",
+    )
     args = parser.parse_args(argv)
 
     repo_root = Path(args.repo_root).resolve()
@@ -31,6 +39,7 @@ def main(argv: list[str] | None = None) -> int:
         teaching_prompt = build_teaching_prompt(context)
         teaching_response = llm.generate(teaching_prompt)
         print(teaching_response)
+        _save_teaching_output(repo_root, context, teaching_response)
 
         state_prompt = build_state_update_prompt(context, teaching_response)
         state_response = llm.generate(state_prompt)
@@ -48,6 +57,27 @@ def _load_context(repo_root: Path) -> LearningContext:
     curriculum = CurriculumLoader(repo_root).load_for_location(location)
     state = state_loader.load_for_location(location, curriculum.previous_lesson_id)
     return LearningContext(curriculum=curriculum, state=state)
+
+
+def _save_teaching_output(repo_root: Path, context: LearningContext, teaching_response: str) -> None:
+    curriculum = context.curriculum
+    record = MemoryRecord(
+        record_id=f"{curriculum.lesson_id}:teaching",
+        lesson_id=curriculum.lesson_id,
+        record_type="teaching",
+        content=teaching_response,
+        metadata={
+            "phase": curriculum.phase_id,
+            "lesson_id": curriculum.lesson_id,
+            "lesson_path": str(curriculum.lesson_path),
+        },
+        created_at=_utc_now(),
+    )
+    JsonMemoryStore(repo_root).save(record)
+
+
+def _utc_now() -> str:
+    return datetime.now(UTC).isoformat().replace("+00:00", "Z")
 
 
 def _load_env_file(path: Path) -> None:
