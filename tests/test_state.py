@@ -21,8 +21,8 @@ class StateManagerTest(unittest.TestCase):
             manager.save(state)
             loaded = manager.load("student-1")
 
-            self.assertEqual(loaded.current_lesson, "P1LAB1")
-            self.assertEqual(loaded.current_topic, "Learning State")
+            self.assertEqual(loaded.current_lesson, "P0L1")
+            self.assertEqual(loaded.current_topic, "Scalar, Vector, Matrix, Tensor")
             self.assertEqual(loaded.current_mode, "assess")
             self.assertEqual(loaded.last_question, "What is learning state?")
 

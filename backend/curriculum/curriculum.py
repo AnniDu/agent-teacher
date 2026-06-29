@@ -23,7 +23,7 @@ class Lesson:
 
 
 class Curriculum:
-    def __init__(self, lessons: List[Lesson], default_lesson_id: str = "P1LAB1") -> None:
+    def __init__(self, lessons: List[Lesson], default_lesson_id: str = "P0L1") -> None:
         if not lessons:
             raise ValueError("Curriculum must contain at least one lesson")
         self._lessons = lessons

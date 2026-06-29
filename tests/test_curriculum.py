@@ -12,11 +12,17 @@ class CurriculumLoaderTest(unittest.TestCase):
 
         lesson = curriculum.default_lesson()
 
-        self.assertEqual(lesson.lesson_id, "P1LAB1")
-        self.assertEqual(lesson.phase_id, "P1")
-        self.assertEqual(curriculum.first_topic("P1LAB1"), "Learning State")
-        self.assertEqual(curriculum.next_topic("P1LAB1", "Learning State"), "Teaching Workflow")
-        self.assertIn("Learning State", curriculum.content_for("P1LAB1", "Learning State"))
+        self.assertEqual(lesson.lesson_id, "P0L1")
+        self.assertEqual(lesson.phase_id, "P0")
+        self.assertEqual(curriculum.first_topic("P0L1"), "Scalar, Vector, Matrix, Tensor")
+        self.assertEqual(
+            curriculum.next_topic("P0L1", "Scalar, Vector, Matrix, Tensor"),
+            "Vector Space Intuition",
+        )
+        self.assertIn(
+            "Scalar, Vector, Matrix, Tensor",
+            curriculum.content_for("P0L1", "Scalar, Vector, Matrix, Tensor"),
+        )
 
 
 if __name__ == "__main__":

@@ -19,7 +19,7 @@ class ApiTest(unittest.TestCase):
             response = client.get("/state/student-1")
 
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.json()["current_lesson"], "P1LAB1")
+            self.assertEqual(response.json()["current_lesson"], "P0L1")
             self.assertEqual(response.json()["current_mode"], "teach")
 
     def test_reset_state_persists_requested_location(self) -> None:

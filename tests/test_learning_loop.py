@@ -39,9 +39,9 @@ class LearningLoopTest(unittest.TestCase):
             result = components.learning_loop.run(state, "State tracks where the learner is.")
 
             self.assertEqual(result.state.current_mode, "teach")
-            self.assertEqual(result.state.current_topic, "Teaching Workflow")
+            self.assertEqual(result.state.current_topic, "Vector Space Intuition")
             self.assertEqual(result.state.next_step, "teach_next_topic")
-            self.assertIn("Learning State", result.state.completed_topics)
+            self.assertIn("Scalar, Vector, Matrix, Tensor", result.state.completed_topics)
             self.assertEqual(result.state.understanding_score, 0.9)
 
     def test_assessment_with_low_score_reteaches_current_topic(self) -> None:
@@ -57,7 +57,7 @@ class LearningLoopTest(unittest.TestCase):
             result = components.learning_loop.run(state, "It stores every memory forever.")
 
             self.assertEqual(result.state.current_mode, "teach")
-            self.assertEqual(result.state.current_topic, "Learning State")
+            self.assertEqual(result.state.current_topic, "Scalar, Vector, Matrix, Tensor")
             self.assertEqual(result.state.next_step, "reteach_current_topic")
             self.assertEqual(result.state.misconceptions, ["State is memory"])
 
