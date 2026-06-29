@@ -1,120 +1,185 @@
 # AGENTS.md
 
-# Agent Teacher Development Guide
+# Agent Teacher Engineering Workflow
 
-This document defines the engineering workflow for AI agents working in this repository.
+This document defines how AI agents work in this repository.
+
+Its purpose is to ensure every implementation follows a consistent engineering workflow and produces small, reviewable, production-quality changes.
 
 ---
 
-# Source of Truth
+# 1. Source of Truth
 
-The repository follows the following priority order:
+When multiple sources exist, follow them in the following priority order:
 
 1. GitHub Issue
 2. Accepted RFC
 3. Pull Request Review Comments
 4. Existing Repository Architecture
 
-Implementation should always follow the highest-priority applicable document.
+If two sources conflict, always follow the higher-priority source.
 
 Do not invent requirements beyond the documented scope.
 
 ---
 
-# Workflow
+# 2. Decision Process
 
-Before implementing any task:
+Before writing any code, make the following decisions in order.
 
-1. Read the referenced GitHub Issue.
-2. If the Issue references an RFC, read the accepted RFC.
-3. Review the existing implementation before making changes.
+## Step 1 — Does this Issue require an RFC?
 
-Before writing code, briefly summarize:
+An RFC is required if the change:
+
+* introduces a new module
+* changes module boundaries
+* changes public interfaces
+* changes state or data schemas
+* changes runtime workflow
+* introduces new infrastructure or external systems
+* affects multiple subsystems
+
+If an RFC is required but no accepted RFC exists:
+
+* Draft an RFC under `docs/rfcs/`
+* Stop after creating the RFC
+* Do not implement code
+
+Otherwise:
+
+* Continue implementation directly.
+
+---
+
+## Step 2 — Determine the branch strategy
+
+By default:
+
+* Create branches from `dev_v1`.
+
+If the Issue explicitly depends on an unmerged feature branch:
+
+* Create the branch from that feature branch.
+* Use stacked Pull Requests.
+
+---
+
+## Step 3 — Validate understanding
+
+Before implementation, summarize:
 
 * Issue goal
 * Scope
 * Non-goals
 * High-level implementation plan
 
----
-
-# Implementation Principles
-
-* Implement only the requested Issue.
-* Do not expand the scope.
-* Do not perform opportunistic refactoring.
-* Follow the accepted RFC when one exists.
-* Preserve existing architecture and module boundaries.
-* Prefer simple and maintainable solutions.
-* Avoid introducing unnecessary abstractions.
-* Do not modify unrelated files.
+Only begin implementation after this summary.
 
 ---
 
-# Testing
+# 3. Development Workflow
 
 For every implementation:
 
-* Add or update tests for new behavior.
-* Ensure existing tests continue to pass.
-* Run the full test suite before finishing.
+1. Read the GitHub Issue.
+2. Read the accepted RFC (if one exists).
+3. Review the existing implementation.
+4. Create the appropriate branch.
+5. Implement the requested Issue.
+6. Add or update tests.
+7. Run the complete test suite.
+8. Commit the changes.
+9. Push the branch.
+10. Open a Pull Request.
 
-Do not skip testing unless explicitly instructed.
+If updating an existing Pull Request:
 
----
-
-# Git Workflow
-
-For new work:
-
-* Create a feature branch.
-* Commit with a clear commit message.
-* Push the branch.
-* Open a Pull Request referencing the GitHub Issue.
-
-If a Pull Request already exists for the Issue:
-
-* Read all review comments.
-* Address every actionable review comment.
-* Push additional commits to the existing branch.
-* Do not create a new Pull Request.
+1. Read every review comment.
+2. Address every actionable comment.
+3. Push additional commits.
+4. Do not create a new Pull Request.
 
 ---
 
-# Pull Request Expectations
+# 4. Branch Strategy
 
-Every Pull Request should include:
+## Naming
 
-* Summary
-* Related Issue
-* Related RFC (if applicable)
-* Testing
-* Non-goals
+Use deterministic branch names.
+
+```
+feature/issue-<number>-<short-slug>
+fix/issue-<number>-<short-slug>
+docs/issue-<number>-<short-slug>
+chore/issue-<number>-<short-slug>
+```
+
+Examples:
+
+```
+feature/issue-1-memory-store
+fix/issue-5-llm-retry
+docs/issue-7-agents-md
+```
+
+Avoid generic names such as:
+
+```
+feature/update
+feature/work
+fix/bug
+implementation
+codex/changes
+```
+
+Feature branches are temporary.
+
+After a feature is merged, future work should be performed in a new feature or fix branch.
 
 ---
 
-# Engineering Philosophy
+# 5. Implementation Rules
 
-This project values:
-
-* Small, focused changes
-* Incremental evolution
-* Clear module boundaries
-* Simple designs
-* Production-quality code
-* Well-tested implementations
-
-Favor proven engineering practices over unnecessary complexity.
+* Implement only the requested Issue.
+* Stay within the documented scope.
+* Do not perform opportunistic refactoring.
+* Prefer extending existing patterns over introducing new ones.
+* Preserve existing architecture and module boundaries.
+* Prefer the simplest solution that satisfies the Issue.
+* Do not optimize prematurely.
+* Do not introduce third-party dependencies unless explicitly required by the Issue or an accepted RFC.
+* Do not modify unrelated files.
+* When requirements or architecture are unclear, stop and ask for clarification instead of making assumptions.
+* If implementing the requested change would significantly expand the current Issue, recommend creating a new Issue instead of expanding scope.
 
 ---
 
-# Validation
+# 6. Pull Requests
 
-At the beginning of every implementation task, confirm:
+Every Pull Request should:
 
-* Which Issue is being implemented.
-* Whether an RFC applies.
-* The implementation scope.
-* The non-goals.
+* reference the related GitHub Issue
+* reference the RFC (if applicable)
+* summarize the implementation
+* summarize testing performed
+* explicitly state non-goals
 
-Only begin implementation after this summary has been provided.
+Pull Requests should be:
+
+* small
+* focused
+* independently reviewable
+
+---
+
+# 7. Engineering Principles
+
+This repository values:
+
+* incremental development
+* small, reviewable changes
+* clear module boundaries
+* production-quality implementations
+* comprehensive testing
+* consistency over cleverness
+* proven solutions over unnecessary complexity
