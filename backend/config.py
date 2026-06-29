@@ -18,6 +18,7 @@ class Settings:
 
 def load_settings(repo_root: Optional[Path] = None) -> Settings:
     root = (repo_root or Path.cwd()).resolve()
+    _load_env_file(root / ".env")
     return Settings(
         repo_root=root,
         data_dir=Path(os.environ.get("LEARNING_COACH_DATA_DIR", root / "data")).resolve(),
@@ -27,3 +28,14 @@ def load_settings(repo_root: Optional[Path] = None) -> Settings:
         gemini_api_key=os.environ.get("GEMINI_API_KEY"),
         gemini_model=os.environ.get("GEMINI_MODEL", "gemini-1.5-flash"),
     )
+
+
+def _load_env_file(path: Path) -> None:
+    if not path.exists():
+        return
+    for line in path.read_text().splitlines():
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#") or "=" not in stripped:
+            continue
+        key, value = stripped.split("=", 1)
+        os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))

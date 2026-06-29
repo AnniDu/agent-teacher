@@ -27,6 +27,15 @@ export GEMINI_API_KEY="your-api-key"
 export GEMINI_MODEL="gemini-1.5-flash"
 ```
 
+Or put the values in a local `.env` file:
+
+```bash
+GEMINI_API_KEY=your-api-key
+GEMINI_MODEL=gemini-1.5-flash
+```
+
+`.env` is ignored by Git and must not be committed.
+
 `GEMINI_MODEL` defaults to `gemini-1.5-flash` if unset.
 
 ## Run
