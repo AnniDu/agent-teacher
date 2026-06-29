@@ -32,9 +32,16 @@ Before implementing any task:
 Before writing code, briefly summarize:
 
 * Issue goal
-* Scope
+* Implementation scope
 * Non-goals
 * High-level implementation plan
+
+For non-trivial changes:
+
+* Produce a short design proposal before implementation.
+* Explain the major design decisions.
+* Explain important trade-offs.
+* Wait for approval before implementing.
 
 ---
 
@@ -47,6 +54,8 @@ Before writing code, briefly summarize:
 * Preserve existing architecture and module boundaries.
 * Prefer simple and maintainable solutions.
 * Avoid introducing unnecessary abstractions.
+* Prefer consistency with the existing architecture over introducing a technically superior but inconsistent solution.
+* Do not improve code simply because it could be improved. Refactor only when necessary to accomplish the current task.
 * Do not modify unrelated files.
 
 ---
@@ -59,6 +68,8 @@ For every implementation:
 * Ensure existing tests continue to pass.
 * Run the full test suite before finishing.
 
+Testing should be proportional to the scope of the change.
+
 Do not skip testing unless explicitly instructed.
 
 ---
@@ -69,6 +80,7 @@ For new work:
 
 * Create a feature branch.
 * Commit with a clear commit message.
+* Keep commits focused on a single logical change.
 * Push the branch.
 * Open a Pull Request referencing the GitHub Issue.
 
@@ -88,6 +100,8 @@ Every Pull Request should include:
 * Summary
 * Related Issue
 * Related RFC (if applicable)
+* Design Decisions
+* Trade-offs
 * Testing
 * Non-goals
 
@@ -117,4 +131,17 @@ At the beginning of every implementation task, confirm:
 * The implementation scope.
 * The non-goals.
 
+If requirements are ambiguous, explicitly identify the ambiguity and ask for clarification before implementation.
+
 Only begin implementation after this summary has been provided.
+
+---
+
+# Design Decisions
+
+For non-trivial implementations, briefly document:
+
+* Major design decisions
+* Key assumptions
+* Important trade-offs
+* Deferred improvements (if any)
