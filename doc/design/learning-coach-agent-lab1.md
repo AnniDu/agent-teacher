@@ -32,7 +32,7 @@ The central architectural rule is:
 
 > The backend decides what happens next. The LLM only performs bounded reasoning tasks.
 
-The LLM should not decide whether the system is teaching, assessing, moving to the next topic, or updating state. Those are deterministic workflow decisions owned by backend code.
+Workflow mode is determined only by persisted backend state and deterministic transition logic. The LLM must never decide workflow mode, routing, state transitions, or the next action. The LLM should only perform bounded reasoning tasks such as teaching, assessment, and feedback generation.
 
 ## 2. Component Responsibilities
 
@@ -53,7 +53,7 @@ Responsibilities:
 
 * Receive chat requests.
 * Load learning state.
-* Determine the current workflow mode.
+* Determine the current workflow mode from backend state.
 * Call the appropriate service.
 * Update learning state deterministically.
 * Save learning state.
@@ -75,6 +75,8 @@ The LLM should not:
 * Choose workflow mode.
 * Write state directly.
 * Decide routing.
+* Select the next action.
+* Perform state transitions.
 * Persist data.
 * Call tools.
 * Generate dynamic workflows.
@@ -108,7 +110,8 @@ POST /chat
      - Set current_mode = "teach".
      - Set next_step = "reteach_current_topic".
 7. Save learning state.
-8. Return assistant response.
+8. Append development events.
+9. Return assistant response.
 ```
 
 The proposed architecture is directionally appropriate:
@@ -125,6 +128,8 @@ response
 ```
 
 One refinement is to avoid putting most logic directly into `decide_next_step()`. Use a small explicit `LearningLoop` module instead. That module owns deterministic control flow and delegates bounded reasoning to teaching and assessment services.
+
+The loop should be intentionally lightweight. Do not introduce workflow engines, planners, agent frameworks, or additional orchestration layers for Lab 1. The point of the lab is a clear and testable learning loop, not maximum architectural flexibility.
 
 Recommended shape:
 
@@ -304,7 +309,33 @@ else:
 
 This preserves separation between reasoning and workflow execution.
 
-## 7. Module Design
+## 7. Event Log
+
+Add a minimal append-only event log for debugging and future evaluation.
+
+Recommended path:
+
+```text
+data/events/{student_id}.jsonl
+```
+
+Each line should be a small JSON object. Suggested event types:
+
+* `student_message`
+* `assistant_message`
+* `assessment_result`
+* `state_transition`
+
+Example events:
+
+```json
+{"type":"student_message","student_id":"student_001","message":"I think the backend owns the loop.","created_at":"2026-06-28T00:00:00Z"}
+{"type":"state_transition","student_id":"student_001","from_mode":"assess","to_mode":"teach","next_step":"reteach_current_topic","created_at":"2026-06-28T00:00:01Z"}
+```
+
+The event log is a development artifact. It should help inspect the loop and support later evaluation, but it should not become long-term memory, RAG context, or a second source of truth for learning state.
+
+## 8. Module Design
 
 Suggested backend modules:
 
@@ -325,6 +356,8 @@ backend/
     state_manager.py
     state_store.py
     models.py
+  events/
+    event_log.py
   curriculum/
     curriculum_loader.py
     curriculum.py
@@ -453,15 +486,42 @@ Examples:
 * `AssessmentResult`
 * `TeachingResult`
 
+### events/event_log.py
+
+Append-only development log.
+
+Responsibilities:
+
+* Append student message events.
+* Append assistant message events.
+* Append assessment result events.
+* Append state transition events.
+* Write JSONL records to `data/events/{student_id}.jsonl`.
+
+This module should stay simple. It is not memory, retrieval, analytics infrastructure, or a durable audit system for Lab 1.
+
 ### curriculum/curriculum_loader.py
 
 Responsibilities:
 
-* Load the current lesson/topic.
-* Provide topic ordering.
-* Return content needed by teaching and assessment prompts.
+* Parse the existing `curriculum/` files.
+* Construct lightweight curriculum objects from the existing course, phase, lesson, lab, and topic hierarchy.
+* Keep the existing curriculum format as the source of truth.
 
-For Lab 1, curriculum can be static JSON or Markdown.
+Do not invent a new curriculum schema for Lab 1 unless the existing format has a fundamental limitation.
+
+### curriculum/curriculum.py
+
+Lightweight curriculum models and read APIs.
+
+Responsibilities:
+
+* Expose traversal/query APIs required by the learning loop.
+* Provide lesson and topic content for teaching and assessment.
+* Provide deterministic topic ordering for progression.
+* Keep curriculum knowledge out of API routes, services, and prompts.
+
+The learning loop should consume curriculum only through this module.
 
 ### prompts/
 
@@ -470,7 +530,7 @@ Responsibilities:
 * Store prompt templates.
 * Keep prompt text separate from workflow logic.
 
-## 8. Suggested Directory Structure
+## 9. Suggested Directory Structure
 
 ```text
 learning-coach/
@@ -491,6 +551,8 @@ learning-coach/
       models.py
       state_manager.py
       state_store.py
+    events/
+      event_log.py
     curriculum/
       curriculum.py
       curriculum_loader.py
@@ -509,12 +571,14 @@ learning-coach/
       Chat.jsx
   data/
     students/
-    curriculum/
+    events/
 ```
 
 If using a Python-only MVP, the frontend can be skipped initially or built as a tiny static page.
 
-## 9. Future Extension Strategy
+The existing repository-level `curriculum/` directory remains the source of truth for course content. The `backend/curriculum/` module is an adapter around that content, not a replacement for it.
+
+## 10. Future Extension Strategy
 
 The architecture should evolve by replacing or extending modules, not rewriting the control loop.
 
@@ -548,6 +612,8 @@ LearningLoop
 ```
 
 Do not overload learning state with long-term memory.
+
+The Lab 1 event log should not be treated as memory. If long-term memory is added later, it should be introduced as a separate explicit subsystem with clear read/write semantics.
 
 ### RAG
 
@@ -583,19 +649,9 @@ The learning loop can pause until instructor approval.
 
 ### Evaluation
 
-Add event logs and test fixtures.
+Use the JSONL event log and test fixtures as the starting point for later evaluation. Evaluation should be added as a separate capability after the MVP loop works end to end.
 
-Useful later:
-
-```text
-events/
-  student_message
-  assistant_message
-  assessment_result
-  state_transition
-```
-
-## 10. Design Trade-offs
+## 11. Design Trade-offs
 
 ### Explicit Control Loop vs. LLM-Driven Agent
 
@@ -708,7 +764,51 @@ Trade-off:
 
 For Lab 1, code-owned state transitions are the right choice.
 
-## 11. Potential Risks
+### Minimal Event Log vs. No Event Log
+
+Chosen: simple append-only JSONL event log.
+
+Why:
+
+* Makes the control loop easier to debug.
+* Creates useful artifacts for later evaluation.
+* Requires little infrastructure.
+* Does not change the learning state model.
+
+Alternative:
+
+* No event log in Lab 1.
+
+Trade-off:
+
+* No event log is simpler.
+* A minimal event log adds a small module and file writes, but gives much better visibility into state transitions.
+
+For Lab 1, the event log is appropriate as long as it remains a development artifact and does not become memory or RAG.
+
+### Existing Curriculum Format vs. New Curriculum Schema
+
+Chosen: adapt the backend curriculum module to the existing `curriculum/` directory.
+
+Why:
+
+* The course structure already exists.
+* Avoids redesigning content representation during Lab 1.
+* Keeps curriculum content as a single source of truth.
+* Lets the learning loop rely on simple read APIs without knowing file layout details.
+
+Alternative:
+
+* Create a new JSON curriculum schema for the learning coach.
+
+Trade-off:
+
+* A new schema could be easier for the app to parse.
+* It would duplicate or replace existing course content and expand Lab 1 scope unnecessarily.
+
+For Lab 1, the existing curriculum format should remain the source of truth unless implementation reveals a fundamental limitation.
+
+## 12. Potential Risks
 
 ### State Drift
 
@@ -755,7 +855,17 @@ Mitigation:
 * Prompts should ask only for bounded outputs.
 * Backend code should own all mode changes.
 
-## 12. Recommendations Before Implementation
+### Curriculum Drift
+
+The backend could accidentally grow a second curriculum representation that diverges from the existing course files.
+
+Mitigation:
+
+* Treat `curriculum/` as the source of truth.
+* Keep parsing and traversal inside the curriculum module.
+* Do not duplicate curriculum hierarchy in API routes, services, prompts, or state files.
+
+## 13. Recommendations Before Implementation
 
 1. Start with the backend learning loop before building the frontend.
 2. Write tests for the control loop first:
@@ -770,8 +880,10 @@ Mitigation:
    - state manager persists
    - learning loop controls workflow
 5. Keep prompts simple and explicit.
-6. Avoid adding memory, RAG, tools, planners, or workflow engines in Lab 1.
-7. Make state visible during development through `GET /state/{student_id}`.
-8. Treat every chat request as one control-loop iteration.
+6. Build the curriculum module around the existing `curriculum/` directory.
+7. Add a minimal JSONL event log for development visibility.
+8. Avoid adding memory, RAG, tools, planners, agent frameworks, or workflow engines in Lab 1.
+9. Make state visible during development through `GET /state/{student_id}`.
+10. Treat every chat request as one control-loop iteration.
 
 The best Lab 1 implementation is not the smartest tutor. It is the clearest working example of a stateful AI agent with explicit backend-owned control flow.
