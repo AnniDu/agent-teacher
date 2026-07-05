@@ -6,7 +6,7 @@ from backend.config import Settings
 from backend.curriculum.curriculum import Curriculum
 from backend.events.event_log import EventLog
 from backend.services.assessment_service import AssessmentService
-from backend.services.teaching_service import TeachingService
+from backend.services.teaching_service import TeachingService, TeachingToolError
 from backend.state.models import ASSESS_MODE, TEACH_MODE, LearningState, StateTransition
 
 from .transitions import apply_assessment_transition, transition_to_assess
@@ -68,7 +68,13 @@ class LearningLoop:
     def _teach(self, state: LearningState) -> LearningLoopResult:
         lesson = self._curriculum.lesson(state.current_lesson)
         topic = self._curriculum.topic(state.current_lesson, state.current_topic)
-        teaching = self._teaching_service.teach(state, lesson, topic)
+        try:
+            teaching = self._teaching_service.teach(state, self._curriculum, lesson, topic)
+        except TeachingToolError as exc:
+            self._event_log.append(state.student_id, "tool_call", exc.tool_call_event)
+            raise
+        if teaching.tool_call_event is not None:
+            self._event_log.append(state.student_id, "tool_call", teaching.tool_call_event)
         transition = transition_to_assess(state, teaching.question)
         return LearningLoopResult(message=teaching.message, state=state, transition=transition)
 

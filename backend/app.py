@@ -17,6 +17,7 @@ from backend.services.llm_client import GeminiClient, LLMClient
 from backend.services.teaching_service import TeachingService
 from backend.state.state_manager import StateManager
 from backend.state.state_store import FileStateStore
+from backend.tools.registry import default_tool_registry
 
 
 @dataclass
@@ -35,7 +36,7 @@ def create_app(repo_root: Optional[Path] = None, llm_client: Optional[LLMClient]
     event_log = EventLog(settings.data_dir)
     learning_loop = LearningLoop(
         curriculum=curriculum,
-        teaching_service=TeachingService(llm),
+        teaching_service=TeachingService(llm, default_tool_registry()),
         assessment_service=AssessmentService(llm),
         event_log=event_log,
         settings=settings,
