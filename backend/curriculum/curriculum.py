@@ -39,6 +39,9 @@ class Curriculum:
         except KeyError as exc:
             raise ValueError(f"Unknown lesson: {lesson_id}") from exc
 
+    def lessons(self) -> List[Lesson]:
+        return list(self._lessons)
+
     def topic(self, lesson_id: str, topic_name: str) -> Topic:
         lesson = self.lesson(lesson_id)
         for topic in lesson.topics:

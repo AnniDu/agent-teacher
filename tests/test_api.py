@@ -64,6 +64,7 @@ class ApiTest(unittest.TestCase):
             state_response = client.get("/state/student-1")
 
             self.assertEqual(response.status_code, 200)
+            self.assertEqual(set(response.json().keys()), {"message", "state"})
             self.assertIn("Learning state tracks progress.", response.json()["message"])
             self.assertEqual(response.json()["state"]["current_mode"], "assess")
             self.assertEqual(state_response.json()["current_mode"], "assess")
