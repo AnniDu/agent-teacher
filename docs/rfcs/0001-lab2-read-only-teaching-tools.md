@@ -6,11 +6,11 @@ Issue: #18
 
 ## Summary
 
-Introduce one-step, LLM-selected, read-only tool calling inside the teaching workflow.
+Introduce one-step, LLM-selected, read-only tool calling inside the internal teaching workflow.
 
 During a teaching turn, the LLM may request at most one approved read-only tool. The backend validates the request through a `ToolRegistry`, executes the tool if it is allowed for the current workflow mode, returns the tool result to the LLM, and asks the LLM for the final teaching response.
 
-Tool calling is only available in teach mode for Lab 2. Assessment remains unchanged.
+Tool calling is only available in teach mode for Lab 2. Assessment remains unchanged. The external `/chat` API contract does not change.
 
 ## Problem
 
@@ -35,6 +35,7 @@ Lab 2 should introduce controlled tool calling without weakening the architectur
   * `get_student_learning_summary`
 * Pass tool results back into the LLM for final teaching response generation.
 * Preserve backend-owned workflow control and deterministic state transitions.
+* Keep the external `/chat` request and response schema unchanged.
 
 ## Non-Goals
 
@@ -68,6 +69,8 @@ LearningLoop
 ```
 
 The `LearningLoop` remains the workflow owner. It only receives a `TeachingResult` from `TeachingService` and then applies the existing deterministic transition to assess mode.
+
+Tool calling is internal to `TeachingService`. API routes, request schemas, response schemas, and frontend behavior should not know whether a teaching response used a tool.
 
 ## Module Design
 
@@ -126,7 +129,9 @@ Arguments:
 {}
 ```
 
-Returns the current phase, lesson, topic, and topic content.
+Returns the current phase, lesson, topic, and full current topic content.
+
+This tool exists so the initial teaching prompt can stay compact. The first teaching prompt should include enough context for the LLM to decide whether it can teach directly, but it should not duplicate the full topic content already available through `get_current_topic`. When the LLM needs the full topic text, it should request this tool.
 
 #### `search_curriculum`
 
@@ -141,6 +146,19 @@ Arguments:
 Returns matching curriculum snippets from the existing curriculum module.
 
 This is simple keyword search over the existing curriculum files, not RAG or vector search.
+
+For Lab 2, search should prioritize the current phase:
+
+1. Search lessons and lab files in the current phase first.
+2. If fewer than the maximum result count are found, optionally include matches from other phases.
+
+The result must be bounded. Return at most 3 compact matches. Each match should include:
+
+* source metadata, such as phase, lesson id, title, and path
+* a short excerpt
+* the matched topic or section when available
+
+The tool should not return full lesson files.
 
 #### `get_student_learning_summary`
 
@@ -231,6 +249,15 @@ Existing state persistence remains owned by `StateManager`.
 
 Existing event persistence remains owned by `LearningLoop`.
 
+Tool calls should be appended to the development event log as `tool_call` events. A `tool_call` event should include:
+
+* requested tool name
+* sanitized arguments
+* whether execution succeeded
+* error message when execution fails
+
+Tool result content should be kept compact in events. Avoid writing large curriculum excerpts into the event log.
+
 ## Error Handling
 
 The backend should raise clear errors for:
@@ -243,6 +270,8 @@ The backend should raise clear errors for:
 
 Errors should be deterministic backend errors, not LLM-decided behavior.
 
+For Lab 2, tool-call failures can use the existing backend error path. Structured client-facing error responses can be deferred until a later issue.
+
 ## Testing
 
 Required tests:
@@ -254,6 +283,9 @@ Required tests:
 * no state mutation from tools
 * final teaching response without a tool call still works
 * tool result is passed back into the LLM before final teaching response
+* `search_curriculum` returns at most 3 compact snippets and prioritizes the current phase
+* tool calls append `tool_call` events
+* `/chat` request and response schemas remain unchanged
 
 Existing tests for:
 
@@ -278,6 +310,9 @@ The first implementation should be a simple synchronous registry with explicit r
 
 ## Open Questions
 
-* Should tool-call errors return HTTP 500 through the existing `/chat` endpoint, or should the API convert them into a structured client-facing error response?
-* Should `search_curriculum` search the whole curriculum or only the current phase for Lab 2?
-* Should tool calls be logged in the development event log, or should event logging remain limited to student messages, assistant messages, assessment results, and state transitions?
+Resolved for Lab 2:
+
+* Tool-call failures use the existing backend error path. Structured client-facing errors are deferred.
+* `search_curriculum` searches the current phase first and returns at most 3 compact snippets.
+* Tool calls are logged as `tool_call` events in the development event log.
+* Tool calling remains internal to `TeachingService`; the external `/chat` API does not change.
