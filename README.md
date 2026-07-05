@@ -1,6 +1,6 @@
 # Agent Teacher
 
-Lab 1 Learning Coach Agent MVP.
+Backend MVP for the Lab 1 Learning Coach Agent.
 
 The backend implements an explicit learning loop:
 
@@ -10,7 +10,7 @@ The backend implements an explicit learning loop:
 4. Apply deterministic state transitions in code.
 5. Persist state and append development events.
 
-The frontend is a thin chat UI served by the backend. Workflow decisions remain backend-owned.
+The frontend is intentionally out of scope for Lab 1.
 
 ## Setup
 
@@ -42,12 +42,6 @@ GEMINI_MODEL=gemini-1.5-flash
 
 ```bash
 uvicorn backend.app:app --reload
-```
-
-Then open:
-
-```text
-http://127.0.0.1:8000/
 ```
 
 ## API

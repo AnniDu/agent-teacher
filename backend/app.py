@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import Optional
 
 from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
 
 from backend.api.routes import router
 from backend.config import Settings, load_settings
@@ -47,9 +46,6 @@ def create_app(repo_root: Optional[Path] = None, llm_client: Optional[LLMClient]
         learning_loop=learning_loop,
     )
     app.include_router(router)
-    frontend_dir = settings.repo_root / "frontend"
-    if frontend_dir.exists():
-        app.mount("/", StaticFiles(directory=frontend_dir, html=True), name="frontend")
     return app
 
 

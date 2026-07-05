@@ -12,25 +12,6 @@ from backend.app import create_app
 
 
 class ApiTest(unittest.TestCase):
-    def test_serves_frontend_root(self) -> None:
-        with tempfile.TemporaryDirectory() as tmpdir:
-            client = _client(Path(tmpdir), _FakeLlm([]), serve_frontend=True)
-
-            response = client.get("/")
-
-            self.assertEqual(response.status_code, 200)
-            self.assertIn("Learning Coach", response.text)
-            self.assertIn("/app.js", response.text)
-
-    def test_serves_frontend_asset(self) -> None:
-        with tempfile.TemporaryDirectory() as tmpdir:
-            client = _client(Path(tmpdir), _FakeLlm([]), serve_frontend=True)
-
-            response = client.get("/app.js")
-
-            self.assertEqual(response.status_code, 200)
-            self.assertIn('requestJson("/chat"', response.text)
-
     def test_get_state_returns_initial_state(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             client = _client(Path(tmpdir), _FakeLlm([]))
@@ -78,8 +59,7 @@ class _FakeLlm:
         return self.responses.pop(0)
 
 
-def _client(root: Path, llm: _FakeLlm, serve_frontend: bool = False) -> TestClient:
-    repo_root = Path.cwd() if serve_frontend else root
+def _client(root: Path, llm: _FakeLlm) -> TestClient:
     with patch.dict(
         "os.environ",
         {
@@ -87,7 +67,7 @@ def _client(root: Path, llm: _FakeLlm, serve_frontend: bool = False) -> TestClie
             "LEARNING_COACH_CURRICULUM_DIR": str(Path("curriculum").resolve()),
         },
     ):
-        return TestClient(create_app(repo_root=repo_root, llm_client=llm))
+        return TestClient(create_app(repo_root=root, llm_client=llm))
 
 
 def _teaching_response() -> str:

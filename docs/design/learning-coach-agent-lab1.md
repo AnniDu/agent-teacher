@@ -40,46 +40,12 @@ Workflow mode is determined only by persisted backend state and deterministic tr
 
 Responsibilities:
 
-* Render the chat conversation between the learner and the assistant.
-* Send learner messages to the backend through `POST /chat`.
+* Render chat messages.
+* Send student messages to the backend.
 * Display assistant responses.
-* Display a lightweight learning state panel for development and debugging, including:
+* Optionally show simple state indicators later, such as current lesson or topic.
 
-  * current phase
-  * current lesson
-  * current topic
-  * current mode
-  * understanding score
-  * next step
-* Update both the chat history and the state panel using the backend response.
-* Display loading and error states for API requests.
-
-The frontend should remain a thin presentation layer.
-
-It should **not**:
-
-* contain learning workflow logic
-* decide whether the system should teach or assess
-* modify learning state directly
-* perform state transitions
-* contain curriculum logic
-* communicate directly with the LLM
-
-All workflow decisions belong to the backend.
-
-The frontend should be replaceable without changing backend behavior. Whether the client is a web application, CLI, desktop application, mobile app, or future integrations, they should all interact with the backend through the same API contract.
-
-For Lab 1, the frontend should consist of a single chat page with a clean, minimal interface. The objective is to visualize and interact with the backend learning loop rather than build a production-ready user experience.
-
-The recommended UI consists of:
-
-* a chat message area
-* a text input
-* a send button
-* a small debug panel showing the current learning state
-
-The frontend should not implement authentication, routing, dashboards, curriculum browsers, progress charts, or other product features during Lab 1.
-
+The frontend should not contain learning workflow logic. For Lab 1, a single chat page is enough.
 
 ### Backend
 
