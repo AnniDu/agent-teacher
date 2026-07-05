@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Learning Coach</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="chat-panel" aria-label="Learning coach chat">
+        <header class="chat-header">
+          <div>
+            <h1>Learning Coach</h1>
+            <p>Stateful learning loop</p>
+          </div>
+          <label class="student-field">
+            <span>Student</span>
+            <input id="student-id" name="student-id" value="student_001" autocomplete="off" />
+          </label>
+        </header>
+
+        <div id="messages" class="messages" aria-live="polite"></div>
+
+        <p id="error" class="error" role="alert" hidden></p>
+
+        <form id="chat-form" class="composer">
+          <textarea
+            id="message-input"
+            name="message"
+            rows="3"
+            placeholder="Type your response..."
+            required
+          ></textarea>
+          <button id="send-button" type="submit">Send</button>
+        </form>
+      </section>
+
+      <aside class="state-panel" aria-label="Learning state">
+        <div class="state-header">
+          <h2>Learning State</h2>
+          <button id="refresh-state" type="button">Refresh</button>
+        </div>
+        <dl class="state-grid">
+          <div>
+            <dt>Phase</dt>
+            <dd id="state-phase">-</dd>
+          </div>
+          <div>
+            <dt>Lesson</dt>
+            <dd id="state-lesson">-</dd>
+          </div>
+          <div>
+            <dt>Topic</dt>
+            <dd id="state-topic">-</dd>
+          </div>
+          <div>
+            <dt>Mode</dt>
+            <dd id="state-mode">-</dd>
+          </div>
+          <div>
+            <dt>Understanding</dt>
+            <dd id="state-score">-</dd>
+          </div>
+          <div>
+            <dt>Next Step</dt>
+            <dd id="state-next-step">-</dd>
+          </div>
+        </dl>
+      </aside>
+    </main>
+    <script src="/app.js" defer></script>
+  </body>
+</html>
