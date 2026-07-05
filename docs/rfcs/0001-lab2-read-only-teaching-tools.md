@@ -102,6 +102,8 @@ ToolContext
 * current lesson
 * current topic
 
+Tool context is read-only. Tool functions receive context so they can construct a result, not so they can update workflow state or persistence.
+
 ### `backend/tools/registry.py`
 
 Owns tool validation and execution.
@@ -170,14 +172,13 @@ Arguments:
 
 Returns a compact read-only summary from `LearningState`, such as:
 
-* current phase
-* current lesson
-* current topic
-* current mode
 * understanding score
 * misconceptions
 * completed topics
-* next step
+* weak topics when available
+* recent wrong questions when available
+
+This tool should return a curated learner-understanding summary, not raw workflow-control state. It should avoid exposing `next_step`, `current_mode`, or other backend routing/control fields to the LLM. It may include current lesson/topic identifiers only when useful as context for interpreting the learner's understanding.
 
 This tool reads state but does not update it.
 
@@ -206,7 +207,14 @@ Requests for tools outside the allowed mode must fail with a clear error.
 1. a final teaching response, or
 2. one tool request
 
-The LLM response should be JSON.
+`TeachingService` should consume a provider-neutral internal response model, not provider-specific payloads. Gemini native function calling, JSON prompting, or JSON parsing should be hidden behind `LLMClient` or a small adapter owned by the LLM boundary.
+
+The internal response model should represent one of:
+
+* `TeachingResponse`
+* `TeachingToolRequest`
+
+Provider-specific details must not leak into `TeachingService`.
 
 Final teaching response:
 
@@ -258,6 +266,8 @@ Tool calls should be appended to the development event log as `tool_call` events
 
 Tool result content should be kept compact in events. Avoid writing large curriculum excerpts into the event log.
 
+Tool functions and `ToolRegistry` must not append events directly. They remain read-only and side-effect-free apart from returning a `ToolResult` or raising a validation/execution error. Event logging should be performed by the existing workflow/event owner, preferably `LearningLoop`, after `ToolRegistry` execution. If `LearningLoop` needs tool-call details, `TeachingService` may return tool-call metadata alongside `TeachingResult`.
+
 ## Error Handling
 
 The backend should raise clear errors for:
@@ -284,7 +294,9 @@ Required tests:
 * final teaching response without a tool call still works
 * tool result is passed back into the LLM before final teaching response
 * `search_curriculum` returns at most 3 compact snippets and prioritizes the current phase
-* tool calls append `tool_call` events
+* tool calls append `tool_call` events through the workflow/event owner, not from tool functions
+* `get_student_learning_summary` omits `next_step` and other workflow-control fields
+* `TeachingService` consumes provider-neutral LLM response models
 * `/chat` request and response schemas remain unchanged
 
 Existing tests for:
@@ -314,5 +326,5 @@ Resolved for Lab 2:
 
 * Tool-call failures use the existing backend error path. Structured client-facing errors are deferred.
 * `search_curriculum` searches the current phase first and returns at most 3 compact snippets.
-* Tool calls are logged as `tool_call` events in the development event log.
+* Tool calls are logged as `tool_call` events in the development event log by the workflow/event owner, not by tools.
 * Tool calling remains internal to `TeachingService`; the external `/chat` API does not change.
